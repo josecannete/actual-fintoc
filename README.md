@@ -1,3 +1,6 @@
+Crafted with care and a touch of magic using GitHub Copilot. ✨
+
+---
 # Fintoc -> Actual Budget
 
 This tool is designed to help you manage your finances by integrating [Fintoc](https://fintoc.com/) with [Actual Budget](https://actualbudget.org). It allows you to fetch transactions from Fintoc and import them into Actual Budget.
