@@ -4,6 +4,7 @@
   "description": "This tool is designed to help you manage your finances by integrating [Fintoc](https://fintoc.com/) with [Actual Budget](https://actualbudget.org). It allows you to fetch transactions from Fintoc and import them into Actual Budget.",
   "main": "index.js",
   "scripts": {
+    "start": "node app.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

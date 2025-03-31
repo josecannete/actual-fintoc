@@ -14,7 +14,19 @@ This tool is designed to help you manage your finances by integrating [Fintoc](h
 
 ## Installation
 
+Run:
+
+```bash
+npm install
+```
+
 ## Usage
+
+Run:
+
+```bash
+npm start
+```
 
 
 # Notes
