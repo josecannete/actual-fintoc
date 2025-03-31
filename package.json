@@ -1,0 +1,17 @@
+{
+  "name": "actual-fintoc",
+  "version": "1.0.0",
+  "description": "This tool is designed to help you manage your finances by integrating [Fintoc](https://fintoc.com/) with [Actual Budget](https://actualbudget.org). It allows you to fetch transactions from Fintoc and import them into Actual Budget.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@actual-app/api": "^25.3.1",
+    "dotenv": "^16.4.7",
+    "fintoc": "^1.1.2"
+  }
+}
