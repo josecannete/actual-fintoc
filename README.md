@@ -22,12 +22,35 @@ npm install
 
 ## Usage
 
+Copy the `.env.example` file to `.env` and fill in the required values.
+
+```bash
+cp .env.example .env
+```
+
 Run:
 
 ```bash
 npm start
 ```
 
+The first time you run the script, it will create a new budget in Actual Budget with the desired name and import the transactions from Fintoc. It will create some files with the association between the Fintoc Accounts and the Actual Budget Accounts.
+
+The following time you run the script it will fetch the transactions and update the already created budget.
+
+## Tips and Tricks
+- On your Actual Budget app settings:
+  - Change formatting of Numbers to 1.000 instead of 1,000.
+  - Change formatting of Numbers to "Hide decimal places".
+  - Change formatting of Dates to DD/MM/YYYY instead of MM/DD/YYYY if you like.
+  - Change formatting of the first day of the week to Monday instead of Sunday if you like.
+
+# Roadmap
+
+I would like to:
+- Create some initial categories for the transactions.
+- Create a way to automatically categorize transactions based on their description.
+- Properly handle the Payees of the transactions. I decided to ignore them for now, but it would be nice to have them properly managed.
 
 # Notes
 - I barely know any JavaScript or Node, so this code was done with a lot of help from Copilot (vibecoding vibes only 🤙).
