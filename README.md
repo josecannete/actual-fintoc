@@ -14,6 +14,7 @@ This tool is designed to help you manage your finances by integrating [Fintoc](h
   - KEEP THEM SECRET! Do not share them with anyone or commit them to version control.
 - An Actual Budget app running on your machine.
   - You can find instructions on how to do this in the [Actual Budget documentation](https://actualbudget.org/docs/).
+  - Note that the app must be running in local. In particular, I'm using the electron based apps. Probably some modifications would be needed to run it in the web version.
 
 ## Installation
 
@@ -40,6 +41,10 @@ npm start
 The first time you run the script, it will create a new budget in Actual Budget with the desired name and import the transactions from Fintoc. It will create some files with the association between the Fintoc Accounts and the Actual Budget Accounts.
 
 The following time you run the script it will fetch the transactions and update the already created budget.
+
+### New Transactions
+
+It seems that when trying to fetch new transactions from Fintoc, it will return the already fetched ones, at least when using a free account. I found that a way to bring truly new transactions is to deactivate the Fintoc Link Token and then reactivate it. That way you can update your transactions in Actual Budget.
 
 ## Tips and Tricks
 - On your Actual Budget app settings:
