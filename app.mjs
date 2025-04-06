@@ -454,6 +454,92 @@ class ActualService {
       return 0;
     }
   }
+
+  /**
+   * Creates a reconciliation transaction to match the current balance
+   * @param {string} accountId - Actual account ID 
+   * @param {Account} account - Account with balance data
+   * @returns {Promise<boolean>} Success status
+   */
+  async reconcileAccount(accountId, account) {
+    try {
+      // Calculate target balance
+      const targetBalance = this.calculateTargetBalance(account);
+      const targetBalanceInCents = this.convertToCents(targetBalance);
+      
+      logger.info(`Reconciling account ${accountId} (${account.displayName}) to balance ${targetBalance}`);
+      
+      // Get current balance from Actual
+      const actualBalance = await actual_api.getAccountBalance(accountId);
+      
+      // Check if account already reconciled
+      if (actualBalance === targetBalanceInCents) {
+        logger.info(`Account ${accountId} is already reconciled`);
+        return true;
+      }
+      
+      // Create a reconciliation transaction
+      const amountToReconcile = targetBalanceInCents - actualBalance;
+      const today = this.formatDate(new Date());
+      
+      await actual_api.addTransactions(accountId, [{
+        account: accountId,
+        date: today,
+        amount: amountToReconcile,
+        payee: 'Reconciliation',
+        notes: 'Automatic balance reconciliation',
+        cleared: true
+      }]);
+
+      logger.info(`Successfully reconciled account ${account.displayName}`);
+      return true;
+    } catch (error) {
+      logger.error(`Error reconciling account: ${account.displayName}`, error);
+      return false;
+    }
+  }
+  
+  /**
+   * Calculate target balance based on account type
+   * @param {Account} account - Account with balance data
+   * @returns {number} Target balance
+   */
+  calculateTargetBalance(account) {
+    const CREDIT_ACCOUNT_TYPES = ['line_of_credit', 'credit_card'];
+    const isCreditAccount = CREDIT_ACCOUNT_TYPES.includes(account.type);
+    
+    // Safely extract balance values
+    const current = account.fintoc?.balance?.current || 0;
+    const limit = account.fintoc?.balance?.limit || 0;
+    
+    if (isCreditAccount) {
+      // For credit accounts, what we owe is a negative number
+      // Amount owed = current - limit (because available credit = limit - current)
+      return -(limit - current);
+    } else {
+      // For deposit accounts, target is the current balance
+      return current;
+    }
+  }
+  
+  /**
+   * Convert value to cents (Actual's amount format)
+   * @param {number} value - Amount in currency units
+   * @returns {number} Amount in cents
+   */
+  convertToCents(value) {
+    const CENTS_MULTIPLIER = 100;
+    return Math.round(value * CENTS_MULTIPLIER);
+  }
+  
+  /**
+   * Format date to YYYY-MM-DD
+   * @param {Date} date - Date object
+   * @returns {string} Formatted date
+   */
+  formatDate(date) {
+    return date.toISOString().slice(0, 10);
+  }
 }
 
 // ====== CORE SYNC FUNCTIONS ======
@@ -535,6 +621,9 @@ async function updateExistingBudget(fintoc, actual, fintocAccounts) {
       );
       const count = await actual.addTransactions(account.actualId, movements, true);
       totalTransactions += count;
+
+      // Reconcile the account to match current balance
+      await actual.reconcileAccount(account.actualId, account);
     } else {
       logger.warn(`No matching Fintoc data for account ${account.id}, skipping transactions`);
     }
@@ -568,7 +657,7 @@ async function createNewBudget(fintoc, actual, fintocAccounts) {
         const createdAccount = await actual.createAccount(account);
         budgetManager.addAccount(createdAccount);
         totalAccounts++;
-        
+
         // Add transactions
         const movements = await fintoc.getMovements(
           { account: fintocData.account },
@@ -576,6 +665,9 @@ async function createNewBudget(fintoc, actual, fintocAccounts) {
         );
         const count = await actual.addTransactions(createdAccount.actualId, movements, false);
         totalTransactions += count;
+
+        // Reconcile the account to match current balance
+        await actual.reconcileAccount(createdAccount.actualId, createdAccount);
       } catch (error) {
         logger.error(`Failed to process account: ${fintocData.account.id}`, error);
       }
@@ -585,7 +677,7 @@ async function createNewBudget(fintoc, actual, fintocAccounts) {
     await budgetManager.save(CONFIG.ACCOUNTS_JSON_FILE);
     logger.info(`Created ${totalAccounts} accounts with ${totalTransactions} transactions`);
   });
-  
+
   logger.info("New budget creation completed");
 }
 
@@ -597,15 +689,15 @@ async function main() {
   try {
     logger.info("Starting Fintoc to Actual sync");
     const actualService = new ActualService(CONFIG.ACTUAL_DATA_DIR);
-    
+
     // Check if budget already exists
     await actualService.initialize();
     const budgetExists = await actualService.budgetExists(CONFIG.ACTUAL_BUDGET_NAME);
     // await actualService.shutdown();
-    
+
     // Either update existing or create new budget
     await syncFintocToActual(budgetExists);
-    
+
     logger.info("Sync completed successfully");
   } catch (error) {
     logger.error("Unhandled error in main process", error);
