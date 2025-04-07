@@ -1,0 +1,295 @@
+[
+    {
+        "category_group": "Usual Expenses",
+        "categories": [
+            {
+                "name": "🏘️ Arriendo",
+                "examples": []
+            },
+            {
+                "name": "🏡 Aporte Casa",
+                "examples": []
+            },
+            {
+                "name": "☕️ Café",
+                "examples": []
+            },
+            {
+                "name": "📱 Celular",
+                "examples": []
+            },
+            {
+                "name": "🍱 Comida / Snacks",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Transporte",
+        "categories": [
+            {
+                "name": "🚕 Uber / Cabify / Didi",
+                "examples": []
+            },
+            {
+                "name": "🚇 Micro / Metro",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Investments and Savings",
+        "categories": [
+            {
+                "name": "🏦 Ahorro",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Fun",
+        "categories": [
+            {
+                "name": "🥳 Carrete / Salir a comer",
+                "examples": []
+            },
+            {
+                "name": "🛵 Delivery Comida",
+                "examples": []
+            },
+            {
+                "name": "🎤 Conciertos / eventos",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Salud",
+        "categories": [
+            {
+                "name": "🩻 Examenes",
+                "examples": []
+            },
+            {
+                "name": "💪 Suplementos",
+                "examples": []
+            },
+            {
+                "name": "🏥 Medico",
+                "examples": []
+            },
+            {
+                "name": "🦷 Dentista",
+                "examples": []
+            },
+            {
+                "name": "💊 Medicamentos",
+                "examples": []
+            },
+            {
+                "name": "🍏 Nutricionista",
+                "examples": []
+            },
+            {
+                "name": "🩼 Kinesiología",
+                "examples": []
+            },
+            {
+                "name": "🦶 Otros - Salud",
+                "examples": []
+            },
+            {
+                "name": "🏋️‍♂️ Equipamiento deportivo",
+                "examples": []
+            },
+            {
+                "name": "🏊 Deportes",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Ropa",
+        "categories": [
+            {
+                "name": "🥾 Zapatillas",
+                "examples": []
+            },
+            {
+                "name": "🧢 Ropa",
+                "examples": []
+            },
+            {
+                "name": "⌚️ Accesorios",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Suscripciones",
+        "categories": [
+            {
+                "name": "🎧 Musica",
+                "examples": []
+            },
+            {
+                "name": "💾 Almacenamiento",
+                "examples": []
+            },
+            {
+                "name": "🍿 Series / Películas",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Self-development",
+        "categories": [
+            {
+                "name": "📚 Libros / Audiolibros",
+                "examples": []
+            },
+            {
+                "name": "👨‍🏫 Cursos",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Self-care",
+        "categories": [
+            {
+                "name": "💈 Barbería",
+                "examples": []
+            },
+            {
+                "name": "🧴 Skincare",
+                "examples": []
+            },
+            {
+                "name": "💅 Manicure",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Otros",
+        "categories": [
+            {
+                "name": "🚚 Costos de envío",
+                "examples": []
+            },
+            {
+                "name": "👨‍👩‍👧‍👦 Prestamos temporales",
+                "examples": []
+            },
+            {
+                "name": "🎓 Universidad",
+                "examples": []
+            },
+            {
+                "name": "🗂️ Tramites",
+                "examples": []
+            },
+            {
+                "name": "🏦 Banco (mantención plan)",
+                "examples": []
+            },
+            {
+                "name": "🎁 Regalos",
+                "examples": []
+            },
+            {
+                "name": "🧼 Lavanderia - Tintoreria",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Tecnologia",
+        "categories": [
+            {
+                "name": "🖥️ TV",
+                "examples": []
+            },
+            {
+                "name": "🎮 Consolas / Videojuegos",
+                "examples": []
+            },
+            {
+                "name": "⌨️ Accesorios Tech",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Vacaciones",
+        "categories": [
+            {
+                "name": "🏨 Alojamiento - Vacaciones",
+                "examples": []
+            },
+            {
+                "name": "🍛 Comida - Vacaciones",
+                "examples": []
+            },
+            {
+                "name": "🛩️ Pasajes - Transporte",
+                "examples": []
+            },
+            {
+                "name": "🏖️ General - Vacaciones",
+                "examples": []
+            }
+        ]
+    },
+    {
+        "category_group": "Hogar",
+        "categories": [
+            {
+                "name": "👨‍🔧 Servicios (cerrajeria, gasfiter, maestros, etc)",
+                "examples": []
+            },
+            {
+                "name": "🧼 Limpieza",
+                "examples": []
+            },
+            {
+                "name": "✏️ Librería",
+                "examples": []
+            },
+            {
+                "name": "🔩 Ferreteria",
+                "examples": []
+            },
+            {
+                "name": "🧶 Textiles (sabanas, ropa de cama, etc)",
+                "examples": []
+            },
+            {
+                "name": "🗂️ Organización",
+                "examples": []
+            },
+            {
+                "name": "🖼️ Decoración",
+                "examples": []
+            },
+            {
+                "name": "🪑 Muebles",
+                "examples": []
+            },
+            {
+                "name": "📠 Electrodomesticos",
+                "examples": []
+            },
+            {
+                "name": "🍽️ Menaje cocina",
+                "examples": []
+            },
+            {
+                "name": "🪴 Jardinería (plantas)",
+                "examples": []
+            }
+        ]
+    }
+]
