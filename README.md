@@ -42,6 +42,12 @@ The first time you run the script, it will create a new budget in Actual Budget 
 
 The following time you run the script it will fetch the transactions and update the already created budget.
 
+### Creation of Categories
+
+You can config the categories in the `categories.json` file. The script will create the categories in Actual Budget when creating a new budget if the env variable `CREATE_CATEGORIES` is set to `true`.
+
+See the `categories.json.example` file for an example of how to configure the categories. Note there is an "examples" field, this is not used for now, but it is there for future use. The script will create the categories in Actual Budget with the same name as the ones in the `categories.json` file.
+
 ### New Transactions
 
 It seems that when trying to fetch new transactions from Fintoc, it will return the already fetched ones, at least when using a free account. I found that a way to bring truly new transactions is to deactivate the Fintoc Link Token and then reactivate it. That way you can update your transactions in Actual Budget.
@@ -56,7 +62,6 @@ It seems that when trying to fetch new transactions from Fintoc, it will return 
 # Roadmap
 
 I would like to:
-- Create some initial categories for the transactions.
 - Create a way to automatically categorize transactions based on their description.
 - Properly handle the Payees of the transactions. I decided to ignore them for now, but it would be nice to have them properly managed.
 
