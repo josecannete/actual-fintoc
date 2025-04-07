@@ -31,6 +31,8 @@ const CONFIG = {
   ACTUAL_BUDGET_NAME: process.env.ACTUAL_BUDGET_NAME,
   MOVEMENTS_SINCE: process.env.MOVEMENTS_SINCE,
   ACCOUNTS_JSON_FILE: process.env.ACCOUNTS_JSON_FILE,
+  CATEGORIES_JSON_FILE: process.env.CATEGORIES_JSON_FILE,
+  CREATE_CATEGORIES: process.env.CREATE_CATEGORIES?.toLowerCase() === 'true',
 };
 
 // ====== LOGGING ======
@@ -466,22 +468,22 @@ class ActualService {
       // Calculate target balance
       const targetBalance = this.calculateTargetBalance(account);
       const targetBalanceInCents = this.convertToCents(targetBalance);
-      
+
       logger.info(`Reconciling account ${accountId} (${account.displayName}) to balance ${targetBalance}`);
-      
+
       // Get current balance from Actual
       const actualBalance = await actual_api.getAccountBalance(accountId);
-      
+
       // Check if account already reconciled
       if (actualBalance === targetBalanceInCents) {
         logger.info(`Account ${accountId} is already reconciled`);
         return true;
       }
-      
+
       // Create a reconciliation transaction
       const amountToReconcile = targetBalanceInCents - actualBalance;
       const today = this.formatDate(new Date());
-      
+
       await actual_api.addTransactions(accountId, [{
         account: accountId,
         date: today,
@@ -498,7 +500,7 @@ class ActualService {
       return false;
     }
   }
-  
+
   /**
    * Calculate target balance based on account type
    * @param {Account} account - Account with balance data
@@ -507,11 +509,11 @@ class ActualService {
   calculateTargetBalance(account) {
     const CREDIT_ACCOUNT_TYPES = ['line_of_credit', 'credit_card'];
     const isCreditAccount = CREDIT_ACCOUNT_TYPES.includes(account.type);
-    
+
     // Safely extract balance values
     const current = account.fintoc?.balance?.current || 0;
     const limit = account.fintoc?.balance?.limit || 0;
-    
+
     if (isCreditAccount) {
       // For credit accounts, what we owe is a negative number
       // Amount owed = current - limit (because available credit = limit - current)
@@ -521,7 +523,7 @@ class ActualService {
       return current;
     }
   }
-  
+
   /**
    * Convert value to cents (Actual's amount format)
    * @param {number} value - Amount in currency units
@@ -531,7 +533,7 @@ class ActualService {
     const CENTS_MULTIPLIER = 100;
     return Math.round(value * CENTS_MULTIPLIER);
   }
-  
+
   /**
    * Format date to YYYY-MM-DD
    * @param {Date} date - Date object
@@ -539,6 +541,82 @@ class ActualService {
    */
   formatDate(date) {
     return date.toISOString().slice(0, 10);
+  }
+
+  /**
+   * Sets up categories and category groups from a JSON file
+   * @returns {Promise<boolean>} Success status
+   */
+  async setupCategories() {
+    try {
+      logger.info(`Loading categories from ${CONFIG.CATEGORIES_JSON_FILE}`);
+
+      // Check if file exists
+      if (!existsSync(CONFIG.CATEGORIES_JSON_FILE)) {
+        logger.warn(`Categories file not found: ${CONFIG.CATEGORIES_JSON_FILE}`);
+        return false;
+      }
+
+      // Read and parse the categories file
+      const fileContent = await readFile(CONFIG.CATEGORIES_JSON_FILE, 'utf8');
+      const categoryData = JSON.parse(fileContent);
+
+      if (!Array.isArray(categoryData)) {
+        logger.error('Invalid categories format. Expected an array.');
+        return false;
+      }
+
+      logger.info(`Found ${categoryData.length} category groups to process`);
+
+      // Process each category group
+      for (const group of categoryData) {
+        await this.processCategoryGroup(group);
+      }
+
+      logger.info('Categories setup completed successfully');
+      return true;
+    } catch (error) {
+      logger.error('Failed to set up categories', error);
+      return false;
+    }
+  }
+
+  /**
+   * Process a single category group and its categories
+   * @param {Object} group - Category group data
+   * @returns {Promise<void>}
+   */
+  async processCategoryGroup(group) {
+    try {
+      const { category_group, categories } = group;
+
+      if (!category_group) {
+        logger.warn('Skipping group without name');
+        return;
+      }
+
+      // Create the category group
+      logger.info(`Creating category group: ${category_group}`);
+      const groupId = await actual_api.createCategoryGroup({ "name": category_group });
+
+      // Process categories within this group
+      if (Array.isArray(categories)) {
+        for (const category of categories) {
+          if (category.name) {
+            try {
+              logger.info(`Creating category: ${category.name} in group ${category_group}`);
+              await actual_api.createCategory({ "name": category.name, "group_id": groupId });
+            } catch (error) {
+              logger.error(`Failed to create category: ${category.name}`, error);
+              // Continue with other categories even if one fails
+            }
+          }
+        }
+      }
+    } catch (error) {
+      logger.error(`Error processing category group: ${group.category_group}`, error);
+      // Continue with other groups even if one fails
+    }
   }
 }
 
@@ -648,6 +726,14 @@ async function createNewBudget(fintoc, actual, fintocAccounts) {
     const budgetManager = new BudgetManager(CONFIG.ACTUAL_BUDGET_NAME);
     let totalAccounts = 0;
     let totalTransactions = 0;
+
+    // Set up categories first, if enabled
+    if (CONFIG.CREATE_CATEGORIES) {
+      logger.info("Category creation is enabled, setting up categories...");
+      await actual.setupCategories();
+    } else {
+      logger.info("Category creation is disabled, skipping category setup");
+    }
 
     // Create all accounts and add transactions
     for (const fintocData of fintocAccounts) {

@@ -8,6 +8,9 @@ jspm_packages/
 # Generated account data
 accounts.json
 
+# Categories file
+categories.json
+
 # Logs
 logs
 *.log
