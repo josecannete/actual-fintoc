@@ -33,6 +33,7 @@ const CONFIG = {
   ACCOUNTS_JSON_FILE: process.env.ACCOUNTS_JSON_FILE,
   CATEGORIES_JSON_FILE: process.env.CATEGORIES_JSON_FILE,
   CREATE_CATEGORIES: process.env.CREATE_CATEGORIES?.toLowerCase() === 'true',
+  RECONCILE_ACCOUNTS: process.env.RECONCILE_ACCOUNTS?.toLowerCase() === 'true',
 };
 
 // ====== LOGGING ======
@@ -470,9 +471,11 @@ class ActualService {
       const targetBalanceInCents = this.convertToCents(targetBalance);
 
       logger.info(`Reconciling account ${accountId} (${account.displayName}) to balance ${targetBalance}`);
+      const oneWeekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      // Get current balance from Actual, cutoff date is the following week
+      const actualBalance = await actual_api.getAccountBalance(accountId, oneWeekFromNow);
 
-      // Get current balance from Actual
-      const actualBalance = await actual_api.getAccountBalance(accountId);
+      logger.info(`Current balance for account ${accountId}: ${actualBalance}`);
 
       // Check if account already reconciled
       if (actualBalance === targetBalanceInCents) {
@@ -483,6 +486,8 @@ class ActualService {
       // Create a reconciliation transaction
       const amountToReconcile = targetBalanceInCents - actualBalance;
       const today = this.formatDate(new Date());
+
+      logger.info(`Reconciling account ${accountId} with amount: ${amountToReconcile}`);
 
       await actual_api.addTransactions(accountId, [{
         account: accountId,
@@ -700,8 +705,12 @@ async function updateExistingBudget(fintoc, actual, fintocAccounts) {
       const count = await actual.addTransactions(account.actualId, movements, true);
       totalTransactions += count;
 
-      // Reconcile the account to match current balance
-      await actual.reconcileAccount(account.actualId, account);
+      // Reconcile the account to match current balance if enabled
+      if (CONFIG.RECONCILE_ACCOUNTS) {
+        await actual.reconcileAccount(account.actualId, account);
+      } else {
+        logger.info(`Reconciliation skipped for account ${account.displayName} (disabled in config)`);
+      }
     } else {
       logger.warn(`No matching Fintoc data for account ${account.id}, skipping transactions`);
     }
